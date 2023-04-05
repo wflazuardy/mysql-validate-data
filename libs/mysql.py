@@ -23,7 +23,7 @@ class MySQLConnector:
     def __enter__(self):
         logger.info(f"Try making connection to `{self.db}`.")
         self.conn = pymysql.connect(
-            host=MYSQL_HOST,
+            host=self.host,
             user=self.user,
             password=self.password,
             db=self.db
