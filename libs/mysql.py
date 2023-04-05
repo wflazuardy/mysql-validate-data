@@ -1,3 +1,5 @@
+import re
+
 from loguru import logger
 import pymysql
 
@@ -17,9 +19,6 @@ class MySQLConnector:
         self.user = user
         self.password = password
         self.db = db
-
-        logger.debug(type(self.host))
-        logger.debug(f"{self.host} {self.user} {self.password}")
 
     def __enter__(self):
         logger.info(f"Try making connection to `{self.db}`.")
@@ -44,25 +43,27 @@ class MySQLConnector:
                 WHERE TABLE_SCHEMA = '{self.db}'
             """)
             rows = cursor.fetchall()
-        return [
-            row[0] for row in rows
-            if f"{self.db}.{row[0]}"
-            not in EXCLUDE_TABLE_LIST
-        ]
+
+        table_names = []
+        for row in rows:
+            if f"{self.db}.{row[0]}" not in EXCLUDE_TABLE_LIST \
+                    or re.search("archived|snapshot", row[0]):
+                table_names.append(row[0])
+
+        return table_names
 
     def get_validation_data(self) -> None:
         table_names = self.get_table_names()
-        logger.debug(table_names)
 
         raw_query = """
-            SELECT 
+            SELECT
                 COUNT(1) AS ct,
                 MAX(updated_at) AS max_updated_at
-            FROM 
+            FROM
                 {db}.{table}
-            WHERE 
+            WHERE
                 updated_at < DATE_SUB(CURRENT_DATE(), INTERVAL 1 DAY)
-            LIMIT	
+            LIMIT
                 1
         """
 
