@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "mysql-validate-data"
+version = "0.1.0"
+description = ""
+authors = ["Wildan Fajria Lazuardy <wflazuardy@gmail.com>"]
+readme = "README.md"
+packages = [{include = "mysql_validate_data"}]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+pymysql = "^1.0.3"
+loguru = "^0.6.0"
+python-dotenv = "^1.0.0"
+
+
+[tool.poetry.group.dev.dependencies]
+autopep8 = "^2.0.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
